@@ -1,25 +1,44 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import { CardList } from './components/card-list/card-list.component';
+import { SearchBox } from './components/search-box/search-box.component.jsx'
 
-function App() {
-  return (
+class fetchAliens extends Component {
+constructor() {
+    super();
+    this.state = {
+      aliens: [],
+      searchField: ''
+    };
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+componentDidMount(){
+  fetch('https://jsonplaceholder.typicode.com/users')
+  .then(res => res.json())
+  .then(users => this.setState({ aliens: users }))
+}  
+
+handleChange(e){
+  this.setState({ searchField: e.target.value });
+}
+  
+render() {
+    const { aliens, searchField } = this.state;
+    const filteredAliens = aliens.filter(alien => 
+    alien.name.toLowerCase().includes(searchField.toLowerCase())
+    );
+    return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <SearchBox 
+       placeholder='search aliens'
+       handleChange={this.handleChange}
+      />
+      <CardList aliens={filteredAliens}/>
     </div>
   );
 }
+}
 
-export default App;
+
+export default fetchAliens;
